@@ -34,6 +34,7 @@ def display_camera_with_guidelines():
         center_x, center_y = width // 2, height // 2
         color = (0, 255, 0)  # 緑色
         thickness = 2
+        print(height,width,center_x,center_y)
         
         # 横線と縦線を描画
         cv2.line(frame, (center_x, 0), (center_x, height), color, thickness)

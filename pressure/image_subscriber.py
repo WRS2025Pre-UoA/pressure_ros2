@@ -25,7 +25,7 @@ class ImageSubscriber(Node):
             cv_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
 
             #画像の処理
-            func_main.m(cv_image)
+            func_main.m1(cv_image)
 
             # 結果のサイズを計算し、テキストメッセージとしてパブリッシュ
             result_msg = String()

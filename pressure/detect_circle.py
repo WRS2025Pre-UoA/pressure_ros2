@@ -1,0 +1,139 @@
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# グローバル変数
+clicks = []  # クリックした座標を格納するリスト
+
+# マウスクリックのイベントを定義
+def on_mouse_click(event, x, y, flags, param):
+    if event == cv2.EVENT_LBUTTONDOWN:
+        clicks.append((x, y))  # クリックした座標をリストに追加
+        print(f"Clicked at: {x}, {y}")
+        
+def process_circle(img):
+    cv2.imshow('Original Image', img)
+    cv2.setMouseCallback('Original Image', on_mouse_click)
+    while len(clicks) < 5:
+    # 画像を表示し続ける
+        cv2.waitKey(1)
+    cv2.destroyAllWindows()
+
+    center = clicks[0]  # 最初の点を中心とする
+    corners = clicks[1:]  # 残りの4点を四隅とする
+    
+    # 各隅と中心の距離を計算
+    distances = [np.sqrt((center[0] - corner[0]) ** 2 + (center[1] - corner[1]) ** 2) for corner in corners]
+    
+    # 最大距離を取得
+    max_distance = int(max(distances))
+    
+    print(f"Center: {center}, Max Radius: {max_distance}")
+
+    # 円を描画するためのマスクを作成
+    mask = np.zeros_like(img)
+    cv2.circle(mask, center, max_distance, (255, 255, 255), -1)  # マスクに円を描く
+    
+    # マスクを使って円形に画像を切り抜く
+    cut_out = cv2.bitwise_and(img, mask)
+    
+    # 画像の表示
+    cv2.imshow("Cropped Image", cut_out)
+    cv2.waitKey(0)
+    # cv2.destroyAllWindows() 
+    ####################################################################
+    # background_width = max_distance + 200
+    # background_height = max_distance + 200
+
+    # background = np.ones((background_height, background_width, 3), dtype=np.uint8) * 255
+
+
+    # rh, rw = cut_out.shape[:2]
+
+    # print(rh,rw)
+    
+    # # 中心に配置するためのオフセットを計算
+    # center_x = background_width // 2
+    # center_y = background_height // 2
+    # start_x = center_x - rw // 2
+    # start_y = center_y - rh // 2
+
+    # print(center_x,center_y,start_x,start_y)
+    # # 円を背景に配置 (画像をクロップして背景に収める)
+    # end_x = start_x + rw
+    # end_y = start_y + rh
+
+    # # 背景のサイズ範囲に収まるように、描画する部分をクロップ
+    # if start_x < 0:
+    #     cut_out = cut_out[:, -start_x:]
+    #     start_x = 0
+    # if start_y < 0:
+    #     cut_out = cut_out[-start_y:, :]
+    #     start_y = 0
+    # if end_x > background_width:
+    #     cut_out = cut_out[:, :(background_width - start_x)]
+    # if end_y > background_height:
+    #     cut_out = cut_out[:(background_height - start_y), :]
+        
+    
+    # # 背景にリサイズされた円の画像を合成
+    # background[start_y:start_y + cut_out.shape[0], start_x:start_x + cut_out.shape[1]] = cut_out
+    
+    # # 画像の表示
+    # cv2.imshow("Cropped Image1", background)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows() 
+
+    # cv2.imwrite("test.png",background)       
+        # 円の部分だけを切り取る
+    x, y = center
+    x, y = int(x), int(y)
+    cut_out = cut_out[y-max_distance:y+max_distance, x-max_distance:x+max_distance]
+    
+    # 背景画像のサイズを決定
+    background_width = cut_out.shape[1] + 200
+    background_height = cut_out.shape[0] + 200
+
+    # 背景画像を作成
+    background = np.ones((background_height, background_width, 3), dtype=np.uint8) * 0
+
+    # 中心に配置するためのオフセットを計算
+    start_x = (background_width - cut_out.shape[1]) // 2
+    start_y = (background_height - cut_out.shape[0]) // 2
+
+    # 背景に円形の画像を合成
+    background[start_y:start_y + cut_out.shape[0], start_x:start_x + cut_out.shape[1]] = cut_out
+
+    # 画像の表示
+    # cv2.imshow("Cropped Image", cut_out)
+    # cv2.imshow("Background with Cropped Circle", background)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+
+    # cv2.imwrite("cut_circle.png",background) 
+    # h1,w1 = background.shape[:2]
+    return background
+
+
+
+def main():
+    # 画像を読み込む
+    # img = cv2.imread('/home/ros/ros2_ws/src/pressure/data/sample/LINE_ALBUM_パシャリーズ_240726_5.jpg')  # 画像パスを指定
+    # img = cv2.imread("/home/ros/ros2_ws/src/pressure/data/cropped_images/LINE_ALBUM_パシャリーズ_240726_20.jpg")
+    #img = cv2.imread("/home/ros/ros2_ws/src/pressure/data/Origin_data/LINE_ALBUM_20240711_240730_200.jpg")
+    img = cv2.imread("/home/ros/ros2_ws/src/pressure/data/Origin_data/LINE_ALBUM_20240711_240730_74.jpg")
+    # img = cv2.imread("/home/ros/ros2_ws/src/pressure/data/Origin_data/LINE_ALBUM_野坂_240730_2.jpg")
+    # ウィンドウを作成し、マウスクリックイベントを設定
+    h,w=img.shape[:2]
+
+    # cv2.imshow('Original Image', img)
+    # cv2.setMouseCallback('Original Image', on_mouse_click)
+    # while len(clicks) < 5:
+    # # 画像を表示し続ける
+    #     cv2.waitKey(1)
+    # cv2.destroyAllWindows()
+
+    img1 = process_circle(img)
+
+if __name__ == "__main__":
+    main()
