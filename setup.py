@@ -20,7 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'image_subscriber = pressure.image_subscriber:main',
+            # 'image_subscriber = pressure.image_subscriber:main',
+            'pressure_subscriber = pressure.pressure_subscriber:main',
         ],
     },
 )
