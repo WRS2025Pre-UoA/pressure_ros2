@@ -2,17 +2,19 @@ from image_processing import process_image
 from needle_angle import calculate_angle
 from needle_angle import pressure_value_from_angle
 from detect_circle import process_circle
+from detect_circle import affine
+
 import cv2
 import numpy as np
 #pressure_value_from_angle
 
-point=[]
+# point=[]
 # マウスクリックのイベントを定義
-def on_mouse_click(event, x, y, flags, param):
+def on_mouse_click(event, x, y, flags, point):
     if event == cv2.EVENT_LBUTTONDOWN:
         point.append((x, y))  # クリックした座標をリストに追加
 
-def initialize():
+def initialize(point):
     # 真っ白な背景 (650x400)
     img = np.ones((400, 650, 3), dtype=np.uint8) * 255
 
@@ -59,10 +61,13 @@ def initialize():
 
     # 画像を表示
     cv2.imshow("Rectangles with Text", img)
-    cv2.setMouseCallback("Rectangles with Text", on_mouse_click)
+    cv2.setMouseCallback("Rectangles with Text", on_mouse_click,point)
     while len(point) < 1:
     # 画像を表示し続ける
-        cv2.waitKey(1)
+        key = cv2.waitKey(1)
+        if key==-1 and cv2.getWindowProperty("Rectangles with Text",cv2.WND_PROP_VISIBLE)<1:
+            raise ValueError("Closed Window!")
+
     cv2.destroyAllWindows()
     X = point[0][0]
     
@@ -74,8 +79,13 @@ def initialize():
         return 3
 
 
-def m1(img):
+def m1(img,clicks,point):
 
+    if clicks is None:
+        clicks = []
+    if point is None:
+        point = []
+        
     # カメラで補助線を表示して撮影
     # img1=display_camera_with_guidelines()
     # cv2.imshow("test0",img1)
@@ -84,9 +94,11 @@ def m1(img):
     # print(img1.shape[:1])
     # 撮影した画像のパス
     
-    new = process_circle(img)
+    new = process_circle(img,clicks)
+    # new = affine(img)
+    
     # メーターの種類 1 MPa, 0.25 MPa, 1.6 MPa
-    n = initialize()
+    n = initialize(point)
     # 画像処理を行い、圧力計の円の中心と針の最長線を取得
     center_x, center_y, longest_line = process_image(new)
 
@@ -125,10 +137,12 @@ def m1(img):
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
+        return img,pressure_value
         # 画像を保存
-        cv2.imwrite('image_with_text.jpg', img)
+        # cv2.imwrite('image_with_text.jpg', img)
     else:
         print("圧力計の針を検出できませんでした。")
+        return None, None
 
 def main():
 
@@ -137,12 +151,12 @@ def main():
     #image_path = "/home/ros/ros2_ws/src/pressure/pressure/cut_circle.png"
     # image_path = "/home/ros/ros2_ws/src/pressure/data/cropped_images/LINE_ALBUM_パシャリーズ_240726_2.jpg"#0.25 Not
     # image_path = "/home/ros/ros2_ws/src/pressure/data/sample/LINE_ALBUM_パシャリーズ_240726_24.jpg"#1
-    image_path = "/home/ros/ros2_ws/src/pressure/data/sample/LINE_ALBUM_パシャリーズ_240726_25.jpg"#1.6
+    # image_path = "/home/ros/ros2_ws/src/pressure/data/sample/LINE_ALBUM_パシャリーズ_240726_25.jpg"#1.6
     # image_path = "/home/ros/ros2_ws/src/pressure/data/sample/LINE_ALBUM_パシャリーズ_240726_3.jpg"#1.6
-    # image_path = "/home/ros/ros2_ws/src/pressure/data/Origin_data/LINE_ALBUM_20240711_240730_54.jpg"#0.25
+    image_path = "/home/ros/ros2_ws/src/pressure/data/Origin_data/LINE_ALBUM_20240711_240730_54.jpg"#0.25
     img = cv2.imread(image_path)
 
-    m1(img)
+    N,value = m1(img)
 
 if __name__ == "__main__":
     main()

@@ -3,24 +3,33 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # グローバル変数
-clicks = []  # クリックした座標を格納するリスト
+# clicks = []  # クリックした座標を格納するリスト
+
+
+# 2点間の距離を計算する関数
+def dist(p1, p2):
+    return np.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
 
 # マウスクリックのイベントを定義
-def on_mouse_click(event, x, y, flags, param):
+def on_mouse_click(event, x, y, flags, clicks):
     if event == cv2.EVENT_LBUTTONDOWN:
-        clicks.append((x, y))  # クリックした座標をリストに追加
+        clicks.append([x, y])  # クリックした座標をリストに追加
         print(f"Clicked at: {x}, {y}")
         
-def process_circle(img):
+def process_circle(img,clicks):
     cv2.imshow('Original Image', img)
-    cv2.setMouseCallback('Original Image', on_mouse_click)
+    cv2.setMouseCallback('Original Image', on_mouse_click,clicks)
     while len(clicks) < 5:
     # 画像を表示し続ける
-        cv2.waitKey(1)
+        key=cv2.waitKey(1)
+        if key==-1 and cv2.getWindowProperty("Original Image",cv2.WND_PROP_VISIBLE)<1:
+            raise ValueError("Closed Window!")
     cv2.destroyAllWindows()
 
     center = clicks[0]  # 最初の点を中心とする
     corners = clicks[1:]  # 残りの4点を四隅とする
+
+    # clicks=[]
     
     # 各隅と中心の距離を計算
     distances = [np.sqrt((center[0] - corner[0]) ** 2 + (center[1] - corner[1]) ** 2) for corner in corners]
@@ -38,8 +47,8 @@ def process_circle(img):
     cut_out = cv2.bitwise_and(img, mask)
     
     # 画像の表示
-    cv2.imshow("Cropped Image", cut_out)
-    cv2.waitKey(0)
+    # cv2.imshow("Cropped Image", cut_out)
+    # cv2.waitKey(0)
     # cv2.destroyAllWindows() 
     ####################################################################
     # background_width = max_distance + 200
@@ -114,7 +123,38 @@ def process_circle(img):
     # h1,w1 = background.shape[:2]
     return background
 
+def affine(img):
+    cv2.imshow('Original Image', img)
+    cv2.setMouseCallback('Original Image', on_mouse_click)
+    while len(clicks) < 4:
+    # 画像を表示し続ける
+        key = cv2.waitKey(1)
+        if key==-1 and cv2.getWindowProperty("Select the 4 points",cv2.WND_PROP_VISIBLE)<1:
+            raise ValueError("Closed Window!")
+    cv2.destroyAllWindows()
 
+    # クリックした4つの点を取得
+    points = np.array(clicks, dtype="float32")
+    # print("Selected points:", points)
+
+    # 最も長い辺の長さを計算
+    lengths = [dist(points[i], points[(i+1) % 4]) for i in range(4)]
+    max_length = int(max(lengths))
+
+    # 正方形のターゲット座標を設定
+    square = np.array([[0, 0], [max_length, 0], 
+                    [max_length, max_length], [0, max_length]], dtype="float32")
+
+    # 射影変換行列を計算
+    M = cv2.getPerspectiveTransform(points, square)
+
+    # 変換後の画像サイズ
+    output_size = (max_length, max_length)
+
+    # 射影変換を適用
+    warped = cv2.warpPerspective(img, M, output_size)
+    
+    return warped
 
 def main():
     # 画像を読み込む
@@ -133,7 +173,12 @@ def main():
     #     cv2.waitKey(1)
     # cv2.destroyAllWindows()
 
-    img1 = process_circle(img)
+    # img1 = process_circle(img)
+    img1 = affine(img)
+
+    cv2.imshow("result",img1)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 if __name__ == "__main__":
     main()
