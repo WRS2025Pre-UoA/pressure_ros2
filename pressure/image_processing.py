@@ -48,6 +48,35 @@ def is_point_on_line(line, point, tolerance=15):
     return dist_to_line < tolerance
 
 
+def is_point_on_line1(line, point, tolerance=15):
+    """
+    指定された点が線分上にあるかを確認する関数。
+    toleranceは許容距離のしきい値。
+    """
+    x1, y1, x2, y2 = line[0]
+    px, py = point
+
+    # ベクトルを計算
+    line_vec = np.array([x2 - x1, y2 - y1])
+    point_vec = np.array([px - x1, py - y1])
+
+    # 線の長さ
+    line_len = np.linalg.norm(line_vec)
+    if line_len == 0:
+        return False
+
+    # 線分上の射影の長さを計算
+    proj_len = np.dot(point_vec, line_vec) / line_len  # 射影の長さ
+    proj_point = (proj_len / line_len) * line_vec + np.array([x1, y1])  # 射影点
+
+    # 射影点と元の点の距離を測定
+    dist_to_line = np.linalg.norm(np.array([px, py]) - proj_point)
+
+    # 射影点が線分の範囲内であり、距離がtolerance以内であれば線上にあるとみなす
+    if 0 <= proj_len <= line_len:
+        return dist_to_line < tolerance
+
+    return False
 
 
 def process_image(img):
@@ -102,7 +131,7 @@ def process_image(img):
         masked_img = cv2.bitwise_and(bw, bw, mask=mask)
 
         # 最長線の検出
-        lines = cv2.HoughLinesP(masked_img, 1, np.pi / 180, threshold=100, minLineLength=10, maxLineGap=50)
+        lines = cv2.HoughLinesP(masked_img, 1, np.pi / 180, threshold=120, minLineLength=0.5*r, maxLineGap=25)
         longest_line=[]
         k = (cx,cy)
         # print(k)
@@ -111,22 +140,28 @@ def process_image(img):
             print("Find line passing through the center")
             
             # 点 (k[0], k[1]) を通る線だけをフィルタリング
-            valid_lines = [line for line in lines if is_point_on_line(line, k)]    
+            valid_lines = [line for line in lines if is_point_on_line(line, k)]  #延長上もしくは線上に円の中心が通るか  
+            # valid_lines = [line for line in lines if is_point_on_line1(line, k)]   #線上に円の中心が通るか
             # for line in lines:
             #     x1, y1, x2, y2 = line[0]  # 線の始点と終点の座標を取得
             #     # 線の長さを求める
             #     length = np.linalg.norm((x2 - x1, y2 - y1))
             #     # print(length)
-            #     # cv2.line(img, (x1, y1), (x2, y2), (255, 0, 0), 2)  # すべての線を青色で描画
-            #     # cv2.imshow("test9", img)
-            #     # cv2.waitKey(0)
+            #     cv2.line(img, (x1, y1), (x2, y2), (255, 0, 0), 2)  # すべての線を青色で描画
+            #     cv2.imshow("test9", img)
+            #     cv2.waitKey(0)
                 
             # 最長の線を選択
             if valid_lines:
                 print("found")
+                threshold_length = (3/2) * r  # 3/2 * r の値
                 # longest_line = max(lines, key=lambda line: np.linalg.norm((line[0][0] - line[0][2], line[0][1] - line[0][3])))
+                filtered_lines = [
+                    line for line in valid_lines
+                    if np.linalg.norm((line[0][0] - line[0][2], line[0][1] - line[0][3])) <= threshold_length
+                ]
                 longest_line = max(
-                    valid_lines, 
+                    filtered_lines, 
                     key=lambda line: np.linalg.norm((line[0][0] - line[0][2], line[0][1] - line[0][3]))
                 )
                 # print(longest_line)

@@ -99,19 +99,48 @@ def process_circle(img,clicks):
     x, y = int(x), int(y)
     cut_out = cut_out[y-max_distance:y+max_distance, x-max_distance:x+max_distance]
     
+    points = []
+    cv2.imshow('Image', cut_out)
+    cv2.setMouseCallback('Image', on_mouse_click,points)
+    while len(points) < 2:
+    # 画像を表示し続ける
+        key=cv2.waitKey(1)
+        if key==-1 and cv2.getWindowProperty("Image",cv2.WND_PROP_VISIBLE)<1:
+            raise ValueError("Closed Window!")
+    cv2.destroyAllWindows()
+    # print(points)
+    # P1とP2を使って角度を計算
+    P2 = points[1]
+    P1 = points[0]
+    delta_x = P2[0] - P1[0]
+    delta_y = P2[1] - P1[1]
+    angle = np.arctan2(delta_y, delta_x) * (180 / np.pi)+90  # ラジアンから度に変換
+
+    print(angle)
+    # 画像の中心を計算
+    (h, w) = cut_out.shape[:2]
+    center = (w // 2, h // 2)
+
+    # 回転行列を作成
+    M = cv2.getRotationMatrix2D(center, angle, 1.0)  # スケールは1.0
+
+    # 画像を回転
+    rotated_image = cv2.warpAffine(cut_out, M, (w, h))
+    cv2.imshow("1",rotated_image)
+    cv2.waitKey(0)
     # 背景画像のサイズを決定
-    background_width = cut_out.shape[1] + 200
-    background_height = cut_out.shape[0] + 200
+    background_width = rotated_image.shape[1] + 200
+    background_height = rotated_image.shape[0] + 200
 
     # 背景画像を作成
     background = np.ones((background_height, background_width, 3), dtype=np.uint8) * 0
 
     # 中心に配置するためのオフセットを計算
-    start_x = (background_width - cut_out.shape[1]) // 2
-    start_y = (background_height - cut_out.shape[0]) // 2
+    start_x = (background_width - rotated_image.shape[1]) // 2
+    start_y = (background_height - rotated_image.shape[0]) // 2
 
     # 背景に円形の画像を合成
-    background[start_y:start_y + cut_out.shape[0], start_x:start_x + cut_out.shape[1]] = cut_out
+    background[start_y:start_y + rotated_image.shape[0], start_x:start_x + rotated_image.shape[1]] = rotated_image
 
     # 画像の表示
     # cv2.imshow("Cropped Image", cut_out)
@@ -121,6 +150,9 @@ def process_circle(img,clicks):
 
     # cv2.imwrite("cut_circle.png",background) 
     # h1,w1 = background.shape[:2]
+
+    
+
     return background
 
 def affine(img):

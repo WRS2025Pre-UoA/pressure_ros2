@@ -20,18 +20,18 @@ class ImageSubscriber(Node):
         self.bridge = CvBridge()
 
         self.clicks = []
-        self.point = []
+        
     def image_callback(self, msg):
         try:
 
             # 画像リセット
             self.clicks = []
-            self.point = []
+            
             # ROS 画像メッセージを OpenCV 画像に変換
             cv_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
 
             #画像の処理
-            result_img,result_Pa = func_main.m1(cv_image,self.clicks,self.point)
+            result_img,result_Pa = func_main.m1(cv_image,self.clicks)
 
             # 結果のサイズを計算し、テキストメッセージとしてパブリッシュ
             # result_msg = String()
