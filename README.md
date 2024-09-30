@@ -6,5 +6,5 @@
 
 ## 実行コード
 ```bash
-ros2 run pressure pressure image_subscriber
+ros2 run pressure pressure_subscriber
 ```
