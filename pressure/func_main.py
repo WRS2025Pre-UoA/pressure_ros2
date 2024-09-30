@@ -1,8 +1,8 @@
-from image_processing import process_image
-from needle_angle import calculate_angle
-from needle_angle import pressure_value_from_angle
-from detect_circle import process_circle
-from detect_circle import affine
+from pressure.image_processing import process_image
+from pressure.needle_angle import calculate_angle
+from pressure.needle_angle import pressure_value_from_angle
+from pressure.detect_circle import process_circle
+from pressure.detect_circle import affine
 
 import cv2
 import numpy as np
@@ -200,7 +200,7 @@ def initialize(values,num):
 def m1(img,clicks):
 
     values =[1.0,0.25,1.6,2.5]
-    values1 = [-1.0,-0.5,0.0]
+    values1 = [-0.1,-0.05,0.0]
     if clicks is None:
         clicks = []
     

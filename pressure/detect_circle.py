@@ -17,12 +17,12 @@ def on_mouse_click(event, x, y, flags, clicks):
         print(f"Clicked at: {x}, {y}")
         
 def process_circle(img,clicks):
-    cv2.imshow('Original Image', img)
-    cv2.setMouseCallback('Original Image', on_mouse_click,clicks)
+    cv2.imshow('Click center and Four points around the meter', img)
+    cv2.setMouseCallback('Click center and Four points around the meter', on_mouse_click,clicks)
     while len(clicks) < 5:
     # 画像を表示し続ける
         key=cv2.waitKey(1)
-        if key==-1 and cv2.getWindowProperty("Original Image",cv2.WND_PROP_VISIBLE)<1:
+        if key==-1 and cv2.getWindowProperty("Click center and Four points around the meter",cv2.WND_PROP_VISIBLE)<1:
             raise ValueError("Closed Window!")
     cv2.destroyAllWindows()
 
@@ -100,12 +100,12 @@ def process_circle(img,clicks):
     cut_out = cut_out[y-max_distance:y+max_distance, x-max_distance:x+max_distance]
     
     points = []
-    cv2.imshow('Image', cut_out)
-    cv2.setMouseCallback('Image', on_mouse_click,points)
+    cv2.imshow('Click on the centre and middle values', cut_out)
+    cv2.setMouseCallback('Click on the centre and middle values', on_mouse_click,points)
     while len(points) < 2:
     # 画像を表示し続ける
         key=cv2.waitKey(1)
-        if key==-1 and cv2.getWindowProperty("Image",cv2.WND_PROP_VISIBLE)<1:
+        if key==-1 and cv2.getWindowProperty("Click on the centre and middle values",cv2.WND_PROP_VISIBLE)<1:
             raise ValueError("Closed Window!")
     cv2.destroyAllWindows()
     # print(points)
