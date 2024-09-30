@@ -126,8 +126,8 @@ def process_circle(img,clicks):
 
     # 画像を回転
     rotated_image = cv2.warpAffine(cut_out, M, (w, h))
-    cv2.imshow("1",rotated_image)
-    cv2.waitKey(0)
+    # cv2.imshow("1",rotated_image)
+    # cv2.waitKey(0)
     # 背景画像のサイズを決定
     background_width = rotated_image.shape[1] + 200
     background_height = rotated_image.shape[0] + 200
