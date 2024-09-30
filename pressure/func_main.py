@@ -275,7 +275,7 @@ def main():
     # image_path = "/home/ros/ros2_ws/src/pressure/data/cropped_images/LINE_ALBUM_パシャリーズ_240726_2.jpg"#0.25 Not
     # image_path = "/home/ros/ros2_ws/src/pressure/data/sample/LINE_ALBUM_パシャリーズ_240726_24.jpg"#1
     # image_path = "/home/ros/ros2_ws/src/pressure/data/sample/LINE_ALBUM_パシャリーズ_240726_25.jpg"#1.6
-    image_path = "/home/ros/ros2_ws/src/pressure/data/sample/LINE_ALBUM_パシャリーズ_240726_3.jpg"#1.6
+    image_path = "/Users/nagasawa/WRS_RosVersion/pressure_ros2/data/sample/LINE_ALBUM_パシャリーズ_240726_3.jpg"#1.6
     # image_path = "/home/ros/ros2_ws/src/pressure/data/Origin_data/LINE_ALBUM_20240711_240730_54.jpg"#0.25
     clicks = []
     
