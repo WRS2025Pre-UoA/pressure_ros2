@@ -20,10 +20,16 @@ def process_circle(img,clicks):
     cv2.imshow('Click center and Four points around the meter', img)
     cv2.setMouseCallback('Click center and Four points around the meter', on_mouse_click,clicks)
     while len(clicks) < 5:
+        # cv2.imshow('Click center and Four points around the meter', img)
+        # cv2.setMouseCallback('Click center and Four points around the meter', on_mouse_click,clicks)
     # 画像を表示し続ける
-        key=cv2.waitKey(1)
-        if key==-1 and cv2.getWindowProperty("Click center and Four points around the meter",cv2.WND_PROP_VISIBLE)<1:
-            raise ValueError("Closed Window!")
+        key=cv2.waitKey(1) 
+        # print(key)
+        # print(cv2.getWindowProperty("Click center and Four points around the meter",cv2.WND_PROP_VISIBLE))
+        # if key != -1 :#or cv2.getWindowProperty("Click center and Four points around the meter",cv2.WND_PROP_VISIBLE)==0:
+        #     cv2.destroyAllWindows()
+        #     # raise ValueError("Closed Window!")
+        #     return None
     cv2.destroyAllWindows()
 
     center = clicks[0]  # 最初の点を中心とする
@@ -46,52 +52,7 @@ def process_circle(img,clicks):
     # マスクを使って円形に画像を切り抜く
     cut_out = cv2.bitwise_and(img, mask)
     
-    # 画像の表示
-    # cv2.imshow("Cropped Image", cut_out)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows() 
-    ####################################################################
-    # background_width = max_distance + 200
-    # background_height = max_distance + 200
-
-    # background = np.ones((background_height, background_width, 3), dtype=np.uint8) * 255
-
-
-    # rh, rw = cut_out.shape[:2]
-
-    # print(rh,rw)
     
-    # # 中心に配置するためのオフセットを計算
-    # center_x = background_width // 2
-    # center_y = background_height // 2
-    # start_x = center_x - rw // 2
-    # start_y = center_y - rh // 2
-
-    # print(center_x,center_y,start_x,start_y)
-    # # 円を背景に配置 (画像をクロップして背景に収める)
-    # end_x = start_x + rw
-    # end_y = start_y + rh
-
-    # # 背景のサイズ範囲に収まるように、描画する部分をクロップ
-    # if start_x < 0:
-    #     cut_out = cut_out[:, -start_x:]
-    #     start_x = 0
-    # if start_y < 0:
-    #     cut_out = cut_out[-start_y:, :]
-    #     start_y = 0
-    # if end_x > background_width:
-    #     cut_out = cut_out[:, :(background_width - start_x)]
-    # if end_y > background_height:
-    #     cut_out = cut_out[:(background_height - start_y), :]
-        
-    
-    # # 背景にリサイズされた円の画像を合成
-    # background[start_y:start_y + cut_out.shape[0], start_x:start_x + cut_out.shape[1]] = cut_out
-    
-    # # 画像の表示
-    # cv2.imshow("Cropped Image1", background)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows() 
 
     # cv2.imwrite("test.png",background)       
         # 円の部分だけを切り取る

@@ -75,8 +75,8 @@ def initialize(values,num):
         while True:
             # 画像を表示し続ける
             key = cv2.waitKey(1)
-            if key == -1 and cv2.getWindowProperty("Choose Max Value", cv2.WND_PROP_VISIBLE) < 1:
-                raise ValueError("Closed Window!")
+            # if key == -1 and cv2.getWindowProperty("Choose Max Value", cv2.WND_PROP_VISIBLE) < 1:
+            #     raise ValueError("Closed Window!")
             if len(point)>0:
                 X, Y = point[-1]
 
@@ -101,8 +101,8 @@ def initialize(values,num):
         while True:
             # 画像を表示し続ける
             key = cv2.waitKey(1)
-            if key == -1 and cv2.getWindowProperty("Choose Min Value", cv2.WND_PROP_VISIBLE) < 1:
-                raise ValueError("Closed Window!")
+            # if key == -1 and cv2.getWindowProperty("Choose Min Value", cv2.WND_PROP_VISIBLE) < 1:
+                # raise ValueError("Closed Window!")
 
             if len(point)>0:
                 X, Y = point[-1]
@@ -141,13 +141,7 @@ def m1(img,clicks):
         clicks = []
     
         
-    # カメラで補助線を表示して撮影
-    # img1=display_camera_with_guidelines()
-    # cv2.imshow("test0",img1)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
-    # print(img1.shape[:1])
-    # 撮影した画像のパス
+    
     
     new = process_circle(img,clicks)
     # new = affine(img)
