@@ -205,8 +205,8 @@ def main():
     # image_path = "../data/cropped_images/LINE_ALBUM_パシャリーズ_240726_2.jpg"#0.25 Not
     # image_path = "../data/sample/LINE_ALBUM_パシャリーズ_240726_24.jpg"#1
     # image_path = "../data/sample/LINE_ALBUM_パシャリーズ_240726_25.jpg"#1.6
-    # image_path = "/Users/nagasawa/WRS_RosVersion/pressure_ros2/data/sample/LINE_ALBUM_パシャリーズ_240726_3.jpg"#1.6
-    image_path = "../data/Origin_data/LINE_ALBUM_20240711_240730_54.jpg"#0.25
+    image_path = "../data/sample/LINE_ALBUM_パシャリーズ_240726_3.jpg"#1.6
+    # image_path = "../data/Origin_data/LINE_ALBUM_20240711_240730_54.jpg"#0.25
     clicks = []
     
     img = cv2.imread(image_path)

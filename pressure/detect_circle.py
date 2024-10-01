@@ -66,8 +66,8 @@ def process_circle(img,clicks):
     while len(points) < 2:
     # 画像を表示し続ける
         key=cv2.waitKey(1)
-        if key==-1 and cv2.getWindowProperty("Click on the centre and middle values",cv2.WND_PROP_VISIBLE)<1:
-            raise ValueError("Closed Window!")
+        # if key==-1 and cv2.getWindowProperty("Click on the centre and middle values",cv2.WND_PROP_VISIBLE)<1:
+        #     raise ValueError("Closed Window!")
     cv2.destroyAllWindows()
     # print(points)
     # P1とP2を使って角度を計算
@@ -75,7 +75,7 @@ def process_circle(img,clicks):
     P1 = points[0]
     delta_x = P2[0] - P1[0]
     delta_y = P2[1] - P1[1]
-    angle = np.arctan2(delta_y, delta_x) * (180 / np.pi)+90  # ラジアンから度に変換
+    angle = np.arctan2(delta_y, delta_x) * (180 / np.pi) +90 # ラジアンから度に変換
 
     print(angle)
     # 画像の中心を計算
