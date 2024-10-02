@@ -19,7 +19,7 @@ def on_mouse_click(event, x, y, flags, clicks):
 def process_circle(img,clicks):
     cv2.imshow('Original Image', img)
     cv2.setMouseCallback('Original Image', on_mouse_click,clicks)
-    while len(clicks) < 5:
+    while len(clicks) < 3:
     # 画像を表示し続ける
         key=cv2.waitKey(1)
         if key==-1 and cv2.getWindowProperty("Original Image",cv2.WND_PROP_VISIBLE)<1:
