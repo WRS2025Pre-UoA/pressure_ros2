@@ -275,7 +275,11 @@ def m1(img,clicks):
         clicks = []
     
         
-    
+    h,w = img.shape[:2]
+    nw = 2000
+    aspect = w/h
+    nh = int(nw / aspect)
+    img = cv2.resize(img,(nw,nh))
     
     new = process_circle(img,clicks)
     # new = affine(img)
