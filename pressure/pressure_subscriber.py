@@ -6,9 +6,7 @@ from cv_bridge import CvBridge,CvBridgeError
 import cv2
 import numpy as np
 from pathlib import Path
-import sys
-sys.path.append(str(Path(__file__).resolve().parent))
-import func_main
+from pressure import func_main
 
 class ImageSubscriber(Node):
     def __init__(self):

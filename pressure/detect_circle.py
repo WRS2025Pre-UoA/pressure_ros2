@@ -17,13 +17,19 @@ def on_mouse_click(event, x, y, flags, clicks):
         print(f"Clicked at: {x}, {y}")
         
 def process_circle(img,clicks):
+
     cv2.imshow('Original Image', img)
     cv2.setMouseCallback('Original Image', on_mouse_click,clicks)
     while len(clicks) < 3:
+
     # 画像を表示し続ける
-        key=cv2.waitKey(1)
-        if key==-1 and cv2.getWindowProperty("Original Image",cv2.WND_PROP_VISIBLE)<1:
-            raise ValueError("Closed Window!")
+        key=cv2.waitKey(1) 
+        # print(key)
+        # print(cv2.getWindowProperty("Click center and Four points around the meter",cv2.WND_PROP_VISIBLE))
+        # if key != -1 :#or cv2.getWindowProperty("Click center and Four points around the meter",cv2.WND_PROP_VISIBLE)==0:
+        #     cv2.destroyAllWindows()
+        #     # raise ValueError("Closed Window!")
+        #     return None
     cv2.destroyAllWindows()
 
     center = clicks[0]  # 最初の点を中心とする
@@ -46,52 +52,7 @@ def process_circle(img,clicks):
     # マスクを使って円形に画像を切り抜く
     cut_out = cv2.bitwise_and(img, mask)
     
-    # 画像の表示
-    # cv2.imshow("Cropped Image", cut_out)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows() 
-    ####################################################################
-    # background_width = max_distance + 200
-    # background_height = max_distance + 200
-
-    # background = np.ones((background_height, background_width, 3), dtype=np.uint8) * 255
-
-
-    # rh, rw = cut_out.shape[:2]
-
-    # print(rh,rw)
     
-    # # 中心に配置するためのオフセットを計算
-    # center_x = background_width // 2
-    # center_y = background_height // 2
-    # start_x = center_x - rw // 2
-    # start_y = center_y - rh // 2
-
-    # print(center_x,center_y,start_x,start_y)
-    # # 円を背景に配置 (画像をクロップして背景に収める)
-    # end_x = start_x + rw
-    # end_y = start_y + rh
-
-    # # 背景のサイズ範囲に収まるように、描画する部分をクロップ
-    # if start_x < 0:
-    #     cut_out = cut_out[:, -start_x:]
-    #     start_x = 0
-    # if start_y < 0:
-    #     cut_out = cut_out[-start_y:, :]
-    #     start_y = 0
-    # if end_x > background_width:
-    #     cut_out = cut_out[:, :(background_width - start_x)]
-    # if end_y > background_height:
-    #     cut_out = cut_out[:(background_height - start_y), :]
-        
-    
-    # # 背景にリサイズされた円の画像を合成
-    # background[start_y:start_y + cut_out.shape[0], start_x:start_x + cut_out.shape[1]] = cut_out
-    
-    # # 画像の表示
-    # cv2.imshow("Cropped Image1", background)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows() 
 
     # cv2.imwrite("test.png",background)       
         # 円の部分だけを切り取る
@@ -100,13 +61,13 @@ def process_circle(img,clicks):
     cut_out = cut_out[y-max_distance:y+max_distance, x-max_distance:x+max_distance]
     
     points = []
-    cv2.imshow('Image', cut_out)
-    cv2.setMouseCallback('Image', on_mouse_click,points)
+    cv2.imshow('Click on the centre and middle values', cut_out)
+    cv2.setMouseCallback('Click on the centre and middle values', on_mouse_click,points)
     while len(points) < 2:
     # 画像を表示し続ける
         key=cv2.waitKey(1)
-        if key==-1 and cv2.getWindowProperty("Image",cv2.WND_PROP_VISIBLE)<1:
-            raise ValueError("Closed Window!")
+        # if key==-1 and cv2.getWindowProperty("Click on the centre and middle values",cv2.WND_PROP_VISIBLE)<1:
+        #     raise ValueError("Closed Window!")
     cv2.destroyAllWindows()
     # print(points)
     # P1とP2を使って角度を計算
@@ -114,7 +75,7 @@ def process_circle(img,clicks):
     P1 = points[0]
     delta_x = P2[0] - P1[0]
     delta_y = P2[1] - P1[1]
-    angle = np.arctan2(delta_y, delta_x) * (180 / np.pi)+90  # ラジアンから度に変換
+    angle = np.arctan2(delta_y, delta_x) * (180 / np.pi) +90 # ラジアンから度に変換
 
     print(angle)
     # 画像の中心を計算

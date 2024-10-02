@@ -1,8 +1,8 @@
-from image_processing import process_image
-from needle_angle import calculate_angle
-from needle_angle import pressure_value_from_angle
-from detect_circle import process_circle
-from detect_circle import affine
+from pressure.image_processing import process_image
+from pressure.needle_angle import calculate_angle
+from pressure.needle_angle import pressure_value_from_angle
+from pressure.detect_circle import process_circle
+from pressure.detect_circle import affine
 
 import cv2
 import numpy as np
@@ -149,69 +149,133 @@ def initialize(values,num):
         cv2.imshow("Choose Max Value", img)
         cv2.setMouseCallback("Choose Max Value", on_mouse_click, point)
 
-        while len(point) < 1:
+        while True:
             # 画像を表示し続ける
             key = cv2.waitKey(1)
-            if key == -1 and cv2.getWindowProperty("Choose Max Value", cv2.WND_PROP_VISIBLE) < 1:
-                raise ValueError("Closed Window!")
+            # if key == -1 and cv2.getWindowProperty("Choose Max Value", cv2.WND_PROP_VISIBLE) < 1:
+            #     raise ValueError("Closed Window!")
+            if len(point)>0:
+                X, Y = point[-1]
 
-        cv2.destroyAllWindows()
+                # ボタンのクリック位置に応じた値を返す
+                for i, pos in enumerate(positions):
+                    top_left = pos
+                    bottom_right = (top_left[0] + rect_width, top_left[1] + rect_height)
+                    if top_left[0] <= X < bottom_right[0] and top_left[1] <= Y < bottom_right[1]:
+                        if i < len(values):  # 有効な値の範囲内の場合
+                            cv2.destroyAllWindows()
+                            return values[i]  # クリックしたボタンに対応する値を返す
 
-        X, Y = point[0]
+        
+        #         else:
+        #             return None  # 空白ボタンがクリックされた場合
 
-        # ボタンのクリック位置に応じた値を返す
-        for i, pos in enumerate(positions):
-            top_left = pos
-            bottom_right = (top_left[0] + rect_width, top_left[1] + rect_height)
-            if top_left[0] <= X < bottom_right[0] and top_left[1] <= Y < bottom_right[1]:
-                if i < len(values):  # 有効な値の範囲内の場合
-                    return values[i]  # クリックしたボタンに対応する値を返す
-                else:
-                    return None  # 空白ボタンがクリックされた場合
-
-        return None  # どのボタンにも該当しない場合
+        # return None  # どのボタンにも該当しない場合
     elif num == 2:
         cv2.imshow("Choose Min Value", img)
         cv2.setMouseCallback("Choose Min Value", on_mouse_click, point)
 
-        while len(point) < 1:
+        while True:
             # 画像を表示し続ける
             key = cv2.waitKey(1)
-            if key == -1 and cv2.getWindowProperty("Choose Min Value", cv2.WND_PROP_VISIBLE) < 1:
-                raise ValueError("Closed Window!")
+            # if key == -1 and cv2.getWindowProperty("Choose Min Value", cv2.WND_PROP_VISIBLE) < 1:
+                # raise ValueError("Closed Window!")
 
-        cv2.destroyAllWindows()
+            if len(point)>0:
+                X, Y = point[-1]
 
-        X, Y = point[0]
+                # ボタンのクリック位置に応じた値を返す
+                for i, pos in enumerate(positions):
+                    top_left = pos
+                    bottom_right = (top_left[0] + rect_width, top_left[1] + rect_height)
+                    if top_left[0] <= X < bottom_right[0] and top_left[1] <= Y < bottom_right[1]:
+                        if i < len(values):  # 有効な値の範囲内の場合
+                            cv2.destroyAllWindows()
+                            return values[i]  # クリックしたボタンに対応する値を返す
 
-        # ボタンのクリック位置に応じた値を返す
-        for i, pos in enumerate(positions):
-            top_left = pos
-            bottom_right = (top_left[0] + rect_width, top_left[1] + rect_height)
-            if top_left[0] <= X < bottom_right[0] and top_left[1] <= Y < bottom_right[1]:
-                if i < len(values):  # 有効な値の範囲内の場合
-                    print(values[i])
-                    return values[i]  # クリックしたボタンに対応する値を返す
-                else:
-                    return None  # 空白ボタンがクリックされた場合
+        # cv2.destroyAllWindows()
+
+        # X, Y = point[0]
+
+        # # ボタンのクリック位置に応じた値を返す
+        # for i, pos in enumerate(positions):
+        #     top_left = pos
+        #     bottom_right = (top_left[0] + rect_width, top_left[1] + rect_height)
+        #     if top_left[0] <= X < bottom_right[0] and top_left[1] <= Y < bottom_right[1]:
+        #         if i < len(values):  # 有効な値の範囲内の場合
+        #             print(values[i])
+        #             return values[i]  # クリックしたボタンに対応する値を返す
+        #         else:
+        #             return None  # 空白ボタンがクリックされた場合
 
         return None  # どのボタンにも該当しない場合
+    
+#追加したよん
+def initialize_unit():
+    """
+    圧力単位を選ぶための画面を表示
+    """
+    # 真っ白な背景 (400x200)
+    img = np.ones((200, 400, 3), dtype=np.uint8) * 255
+
+    # 単位の選択ボタンの配置
+    positions = [(50, 75), (250, 75)]
+    texts = ["MPa", "Pa"]
+
+    rect_width = 100
+    rect_height = 50
+    color = (0, 0, 0)
+    thickness = 2
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    font_scale = 1
+    font_color = (0, 0, 255)
+    font_thickness = 2
+
+    for i, pos in enumerate(positions):
+        top_left = pos
+        bottom_right = (top_left[0] + rect_width, top_left[1] + rect_height)
+
+        cv2.rectangle(img, top_left, bottom_right, color, thickness)
+
+        center_x = top_left[0] + rect_width // 2
+        center_y = top_left[1] + rect_height // 2
+
+        text_size = cv2.getTextSize(texts[i], font, font_scale, font_thickness)[0]
+        text_x = center_x - text_size[0] // 2
+        text_y = center_y + text_size[1] // 2
+
+        cv2.putText(img, texts[i], (text_x, text_y), font, font_scale, font_color, font_thickness, cv2.LINE_AA)
+
+    point = []
+    cv2.imshow("Choose Unit", img)
+    cv2.setMouseCallback("Choose Unit", on_mouse_click, point)
+
+    while len(point) < 1:
+        key = cv2.waitKey(1)
+        if key == -1 and cv2.getWindowProperty("Choose Unit", cv2.WND_PROP_VISIBLE) < 1:
+            raise ValueError("Closed Window!")
+
+    cv2.destroyAllWindows()
+
+    X, Y = point[0]
+
+    if positions[0][0] <= X < positions[0][0] + rect_width and positions[0][1] <= Y < positions[0][1] + rect_height:
+        return "MPa"
+    elif positions[1][0] <= X < positions[1][0] + rect_width and positions[1][1] <= Y < positions[1][1] + rect_height:
+        return "Pa"
+    else:
+        return None
+
 
 def m1(img,clicks):
 
     values =[1.0,0.25,1.6,2.5]
-    values1 = [-1.0,-0.5,0.0]
+    values1 = [-0.1,-0.05,0.0]
     if clicks is None:
         clicks = []
     
         
-    # カメラで補助線を表示して撮影
-    # img1=display_camera_with_guidelines()
-    # cv2.imshow("test0",img1)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
-    # print(img1.shape[:1])
-    # 撮影した画像のパス
+    
     
     new = process_circle(img,clicks)
     # new = affine(img)
@@ -220,6 +284,8 @@ def m1(img,clicks):
     maxV = initialize(values,1)
     minV = initialize(values1,2)
     print(maxV,minV)
+
+    unit = initialize_unit()
     # 画像処理を行い、圧力計の円の中心と針の最長線を取得
     center_x, center_y, longest_line = process_image(new)
 
@@ -232,12 +298,16 @@ def m1(img,clicks):
         pressure_value = pressure_value_from_angle(angle_deg, max_pressure=maxV,min_pressure=minV)
         if pressure_value == None:
             return None,None
+        
+        if unit == "Pa":
+            pressure_value *= 1e6
+
         print(f"針の角度: {round(angle_deg,4)}度")
         print(f"圧力計の値: {round(pressure_value,4)} Pa")
 
         # テキストの内容
         text = f"Angle of the needle:{round(angle_deg,3)} degrees"
-        text1 = f"Pressure:{round(pressure_value,3)} Pa"
+        text1 = f"Pressure:{round(pressure_value,3)} MPa"
 
         # フォントの種類 (例: cv2.FONT_HERSHEY_SIMPLEX)
         font = cv2.FONT_HERSHEY_SIMPLEX
@@ -272,13 +342,13 @@ def main():
     # n = initialize()
     # print(n)
     #image_path = "/home/ros/ros2_ws/src/pressure/pressure/cut_circle.png"
-    # image_path = "/home/ros/ros2_ws/src/pressure/data/cropped_images/LINE_ALBUM_パシャリーズ_240726_2.jpg"#0.25 Not
-    # image_path = "/home/ros/ros2_ws/src/pressure/data/sample/LINE_ALBUM_パシャリーズ_240726_24.jpg"#1
-    # image_path = "/home/ros/ros2_ws/src/pressure/data/sample/LINE_ALBUM_パシャリーズ_240726_25.jpg"#1.6
-    #image_path = "/home/ros/ros2_ws/src/pressure/data/sample/LINE_ALBUM_パシャリーズ_240726_3.jpg"#1.6
-    image_path = "/Users/kanae/pressure_ros2/data/sample/LINE_ALBUM_パシャリーズ_240726_17.jpg"#1.6
-    
-    # image_path = "/home/ros/ros2_ws/src/pressure/data/Origin_data/LINE_ALBUM_20240711_240730_54.jpg"#0.25
+
+    # image_path = "../data/cropped_images/LINE_ALBUM_パシャリーズ_240726_2.jpg"#0.25 Not
+    # image_path = "../data/sample/LINE_ALBUM_パシャリーズ_240726_24.jpg"#1
+    # image_path = "../data/sample/LINE_ALBUM_パシャリーズ_240726_25.jpg"#1.6
+    image_path = "../data/sample/LINE_ALBUM_パシャリーズ_240726_3.jpg"#1.6
+    # image_path = "../data/Origin_data/LINE_ALBUM_20240711_240730_54.jpg"#0.25
+
     clicks = []
     
     img = cv2.imread(image_path)
