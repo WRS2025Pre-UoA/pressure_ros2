@@ -211,16 +211,16 @@ def initialize(values,num):
         return None  # どのボタンにも該当しない場合
     
 #追加したよん
-def initialize_unit():
-    """
-    圧力単位を選ぶための画面を表示
-    """
+def initialize_img(img):
+    # """
+    # 圧力単位を選ぶための画面を表示
+    # """
     # 真っ白な背景 (400x200)
-    img = np.ones((200, 400, 3), dtype=np.uint8) * 255
+    choose_img = np.ones((200, 400, 3), dtype=np.uint8) * 255
 
     # 単位の選択ボタンの配置
     positions = [(50, 75), (250, 75)]
-    texts = ["MPa", "Pa"]
+    texts = ["resize", "None"]
 
     rect_width = 100
     rect_height = 50
@@ -235,7 +235,7 @@ def initialize_unit():
         top_left = pos
         bottom_right = (top_left[0] + rect_width, top_left[1] + rect_height)
 
-        cv2.rectangle(img, top_left, bottom_right, color, thickness)
+        cv2.rectangle(choose_img, top_left, bottom_right, color, thickness)
 
         center_x = top_left[0] + rect_width // 2
         center_y = top_left[1] + rect_height // 2
@@ -244,28 +244,41 @@ def initialize_unit():
         text_x = center_x - text_size[0] // 2
         text_y = center_y + text_size[1] // 2
 
-        cv2.putText(img, texts[i], (text_x, text_y), font, font_scale, font_color, font_thickness, cv2.LINE_AA)
+        cv2.putText(choose_img, texts[i], (text_x, text_y), font, font_scale, font_color, font_thickness, cv2.LINE_AA)
 
     point = []
-    cv2.imshow("Choose Unit", img)
-    cv2.setMouseCallback("Choose Unit", on_mouse_click, point)
+    cv2.imshow("Choose Mode", choose_img)
+    cv2.setMouseCallback("Choose Mode", on_mouse_click, point)
 
-    while len(point) < 1:
+    while True:
         key = cv2.waitKey(1)
-        if key == -1 and cv2.getWindowProperty("Choose Unit", cv2.WND_PROP_VISIBLE) < 1:
-            raise ValueError("Closed Window!")
+        # if key == -1 and cv2.getWindowProperty("Choose Unit", cv2.WND_PROP_VISIBLE) < 1:
+        #     raise ValueError("Closed Window!")
 
-    cv2.destroyAllWindows()
+        if len(point)>0:
+            X, Y = point[-1]
+    
 
-    X, Y = point[0]
+                
+            if positions[0][0] <= X < positions[0][0] + rect_width and positions[0][1] <= Y < positions[0][1] + rect_height:
+                h,w = img.shape[:2]
+                nw = 2000
+                aspect = w/h
+                nh = int(nw / aspect)
+                img = cv2.resize(img,(nw,nh))
+                cv2.destroyAllWindows()
+                return img
+            elif positions[1][0] <= X < positions[1][0] + rect_width and positions[1][1] <= Y < positions[1][1] + rect_height:
+                cv2.destroyAllWindows()
+                return img
+    
 
-    if positions[0][0] <= X < positions[0][0] + rect_width and positions[0][1] <= Y < positions[0][1] + rect_height:
-        return "MPa"
-    elif positions[1][0] <= X < positions[1][0] + rect_width and positions[1][1] <= Y < positions[1][1] + rect_height:
-        return "Pa"
-    else:
-        return None
-
+    
+    # h,w = img.shape[:2]
+    # nw = 2000
+    # aspect = w/h
+    # nh = int(nw / aspect)
+    # img = cv2.resize(img,(nw,nh))
 
 def m1(img,clicks):
 
@@ -274,12 +287,18 @@ def m1(img,clicks):
     if clicks is None:
         clicks = []
     
+    cv2.imshow("only img",img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+    img = initialize_img(img)
+
         
-    h,w = img.shape[:2]
-    nw = 2000
-    aspect = w/h
-    nh = int(nw / aspect)
-    img = cv2.resize(img,(nw,nh))
+    # h,w = img.shape[:2]
+    # nw = 2000
+    # aspect = w/h
+    # nh = int(nw / aspect)
+    # img = cv2.resize(img,(nw,nh))
     
     new = process_circle(img,clicks)
     # new = affine(img)
@@ -289,7 +308,7 @@ def m1(img,clicks):
     minV = initialize(values1,2)
     print(maxV,minV)
 
-    unit = initialize_unit()
+    
     # 画像処理を行い、圧力計の円の中心と針の最長線を取得
     center_x, center_y, longest_line = process_image(new)
 
@@ -302,15 +321,15 @@ def m1(img,clicks):
         pressure_value = pressure_value_from_angle(angle_deg, max_pressure=maxV,min_pressure=minV)
         if pressure_value == None:
             return None,None
-        
-        if unit == "Pa":
-            pressure_value *= 1e6
+    
+        # if unit == "Pa":
+        #     pressure_value *= 1e6
 
         print(f"針の角度: {round(angle_deg,4)}度")
         print(f"圧力計の値: {round(pressure_value,4)} Pa")
 
         # テキストの内容
-        text = f"Angle of the needle:{round(angle_deg,3)} degrees"
+        text = f"the needle:{round(angle_deg,3)} degrees"
         text1 = f"Pressure:{round(pressure_value,3)} MPa"
 
         # フォントの種類 (例: cv2.FONT_HERSHEY_SIMPLEX)
@@ -329,6 +348,12 @@ def m1(img,clicks):
         cv2.putText(img, text, (100,100), font, font_scale, color, thickness, cv2.LINE_AA)
         cv2.putText(img, text1, (100,150), font, font_scale, color, thickness, cv2.LINE_AA)
 
+        h,w = img.shape[:2]
+        nw = 1280
+        aspect = w/h
+        nh = int(nw / aspect)
+        img = cv2.resize(img,(nw,nh))
+            
         # 画像を表示
         cv2.imshow('Image with Text', img)
         cv2.waitKey(0)
