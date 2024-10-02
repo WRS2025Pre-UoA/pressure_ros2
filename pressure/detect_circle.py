@@ -17,11 +17,11 @@ def on_mouse_click(event, x, y, flags, clicks):
         print(f"Clicked at: {x}, {y}")
         
 def process_circle(img,clicks):
-    cv2.imshow('Click center and Four points around the meter', img)
-    cv2.setMouseCallback('Click center and Four points around the meter', on_mouse_click,clicks)
-    while len(clicks) < 5:
-        # cv2.imshow('Click center and Four points around the meter', img)
-        # cv2.setMouseCallback('Click center and Four points around the meter', on_mouse_click,clicks)
+
+    cv2.imshow('Original Image', img)
+    cv2.setMouseCallback('Original Image', on_mouse_click,clicks)
+    while len(clicks) < 3:
+
     # 画像を表示し続ける
         key=cv2.waitKey(1) 
         # print(key)
