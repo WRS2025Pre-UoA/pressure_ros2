@@ -64,12 +64,16 @@ def pressure_value_from_angle(theta, max_pressure,min_pressure):
         p = (MaxValue-MinValue)/2*(theta-228)/132+MinValue
     elif 0 <= theta and theta <= 132:
         p = (MaxValue-MinValue)/2*theta/132+(MaxValue-MinValue)/2 + MinValue
-    elif 218 <= theta and theta <= 228:
+    elif 223 <= theta and theta <= 228:
         p = MinValue
-    elif 132 <= theta and theta <= 142:
+    elif 132 <= theta and theta <= 137:
         p = MaxValue
+    # elif 218 <= theta and theta <= 228:
+    #     p = MinValue
+    # elif 132 <= theta and theta <= 142:
+    #     p = MaxValue
     else:
-        p = None
+        p = -1
     return p
     # if max_pressure == 1:#1.0MPa
     #     if 228 <= angle_deg < 270:

@@ -216,11 +216,11 @@ def initialize_img(img):
     # 圧力単位を選ぶための画面を表示
     # """
     # 真っ白な背景 (400x200)
-    choose_img = np.ones((200, 400, 3), dtype=np.uint8) * 255
+    choose_img = np.ones((200, 600, 3), dtype=np.uint8) * 255
 
     # 単位の選択ボタンの配置
-    positions = [(50, 75), (250, 75)]
-    texts = ["resize", "None"]
+    positions = [(50, 75), (250, 75),(450, 75)]
+    texts = ["resize W", "resize H","NONE"]
 
     rect_width = 100
     rect_height = 50
@@ -262,15 +262,26 @@ def initialize_img(img):
                 
             if positions[0][0] <= X < positions[0][0] + rect_width and positions[0][1] <= Y < positions[0][1] + rect_height:
                 h,w = img.shape[:2]
-                nw = 2000
+                nw = 1280
                 aspect = w/h
                 nh = int(nw / aspect)
                 img = cv2.resize(img,(nw,nh))
                 cv2.destroyAllWindows()
                 return img
             elif positions[1][0] <= X < positions[1][0] + rect_width and positions[1][1] <= Y < positions[1][1] + rect_height:
+                h,w = img.shape[:2]
+                nh = 640
+                aspect = h/w
+                nw = int(nh / aspect)
+                img = cv2.resize(img,(nw,nh))
                 cv2.destroyAllWindows()
                 return img
+
+            elif positions[2][0] <= X < positions[2][0] + rect_width and positions[2][1] <= Y < positions[2][1] + rect_height:
+                cv2.destroyAllWindows()
+                return img
+
+            
     
 
     
