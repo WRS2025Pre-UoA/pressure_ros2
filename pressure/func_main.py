@@ -298,11 +298,11 @@ def m1(img,clicks):
     if clicks is None:
         clicks = []
     
-    cv2.imshow("only img",img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # cv2.imshow("only img",img)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
 
-    img = initialize_img(img)
+    # img = initialize_img(img)
 
         
     # h,w = img.shape[:2]
